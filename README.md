@@ -76,6 +76,7 @@ services:
       - traefik.http.services.turnify.loadbalancer.server.port=4499
       # Turnify ONLY wants to handle this endpoint (voip/turnServer)
       # All other traffic should go straight to synapse
+      # Host MUST match your matrix server hostname for clients to reach
       - traefik.http.routers.turnify.rule=Host(`matrix.example.com`)&&
         PathRegexp(`^/_matrix/client/(api/v1|r0|v3|unstable)/voip/turnServer$`)
       # synapse (matrix.example.com) has priority 31 or lower
@@ -90,11 +91,10 @@ networks:
 And a sample .env
 
 ```env
-SYNAPSE_BASE_URL=http://synapse:8008 # If within the internal docker network, you should be able to access by container name via docker internal dns.
+SYNAPSE_BASE_URL=http://synapse:8008 
 CF_TURN_TOKEN_ID=your_token_here
 CF_TURN_API_TOKEN=your_api_key_here
 TURN_CREDENTIAL_TTL_SECONDS=86400
-SERVICE_HOSTNAME=matrix.example.com # MUST match your matrix server hostname
 LOG_LEVEL=info
 ```
 
@@ -103,7 +103,8 @@ LOG_LEVEL=info
 You can easily test that it is working with curl.
 
  ```sh
- curl --header "Authorization: Bearer TOKEN_FROM_AUTHORIZED_MATRIX_USER" -X GET https://matrix.example.com/_matrix/client/v3/voip/turnServer
+ curl --header "Authorization: Bearer TOKEN_FROM_AUTHORIZED_MATRIX_USER" \
+   -X GET https://matrix.example.com/_matrix/client/v3/voip/turnServer
  ```
 
 You should see a log of this request in matrix-turnify logs. You will also get an appropriate response. If the request was valid (i.e. you gave it your
