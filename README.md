@@ -70,9 +70,9 @@ services:
       - traefik.docker.network=traefik
       - traefik.http.routers.turnify.entrypoints=https
       - traefik.http.services.turnify.loadbalancer.server.port=4499
-      - traefik.http.routers.turnify.rule=Host(`${SERVICE_HOSTNAME}`)&&
-        PathRegexp(`^.*/voip/turnServer$`)
-      - traefik.http.routers.turnify.priority=32 # Make sure that the synapse server has a LOWER number here, this app must take priority or traefik will route requests to synapse directly
+      - traefik.http.routers.turnify.rule=Host(`matrix.example.com`)&&
+        PathRegexp(`^/_matrix/client/(api/v1|r0|v3|unstable)/voip/turnServer$`) # Turnify ONLY wants to handle this endpoint. All other traffic should go straight to synapse
+      - traefik.http.routers.turnify.priority=32 # synapse (matrix.example.com) has priority 31 or lower, so this server gets priority for JUST the voip/turnServer path
       - traefik.http.routers.turnify.tls=true
 networks:
   traefik:
@@ -87,7 +87,7 @@ CF_TURN_TOKEN_ID=your_token_here
 CF_TURN_API_TOKEN=your_api_key_here
 TURN_CREDENTIAL_TTL_SECONDS=86400
 SERVICE_HOSTNAME=matrix.example.com # MUST match your matrix server hostname
-LOG_LEVEL=INFO
+LOG_LEVEL=info
 ```
 
 ## Testing
@@ -101,6 +101,8 @@ You can easily test that it is working with curl.
 You should see a log of this request in matrix-turnify logs. You will also get an appropriate response. If the request was valid (i.e. you gave it your
 actual auth token, which you can get from the about section of your matrix client) then it will return valid cloudflare call credentials in the form
 expected by matrix clients. If it was a bad token, you will get an unauthorized response directly from your synapse server.
+
+Use `LOG_LEVEL=debug` for more robust logging if you have issues. Most commonly it will be reverse proxy related.
 
 ## Notes
 
