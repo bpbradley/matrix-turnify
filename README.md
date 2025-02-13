@@ -47,9 +47,13 @@ Feel free to add additional middlewares etc, so long as the route is accessible.
 ```yaml
 services:
   matrix-turnify:
+    # latest for the most recent stable build.
+    # edge for the most recent build, possibly unstable.
+    # otherwise, specify a version number (e.g. v1.1)
     image: ghcr.io/bpbradley/matrix-turnify:latest
-    restart: always
-    # This is the network your matrix server is accessible on. Not needed if on default network
+    restart: unless-stopped
+    # This is the network your matrix server is accessible on. 
+    # Not needed if on default network
     networks:
       - traefik
     environment:
@@ -70,9 +74,13 @@ services:
       - traefik.docker.network=traefik
       - traefik.http.routers.turnify.entrypoints=https
       - traefik.http.services.turnify.loadbalancer.server.port=4499
+      # Turnify ONLY wants to handle this endpoint (voip/turnServer)
+      # All other traffic should go straight to synapse
       - traefik.http.routers.turnify.rule=Host(`matrix.example.com`)&&
-        PathRegexp(`^/_matrix/client/(api/v1|r0|v3|unstable)/voip/turnServer$`) # Turnify ONLY wants to handle this endpoint. All other traffic should go straight to synapse
-      - traefik.http.routers.turnify.priority=32 # synapse (matrix.example.com) has priority 31 or lower, so this server gets priority for JUST the voip/turnServer path
+        PathRegexp(`^/_matrix/client/(api/v1|r0|v3|unstable)/voip/turnServer$`)
+      # synapse (matrix.example.com) has priority 31 or lower
+      # so this server gets priority for JUST the voip/turnServer path above
+      - traefik.http.routers.turnify.priority=32 
       - traefik.http.routers.turnify.tls=true
 networks:
   traefik:
