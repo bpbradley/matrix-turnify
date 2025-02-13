@@ -1,9 +1,9 @@
-name: Build Tagged Image
+name: Build Latest Development Image (edge)
 
 on:
   push:
-    tags:
-      - 'v*'  # Trigger on tags starting with 'v'
+    branches:
+      - develop 
 
 jobs:
   build:
@@ -25,5 +25,4 @@ jobs:
       with:
         push: true
         tags: |
-          ghcr.io/${{ github.actor }}/matrix-turnify:latest
-          ghcr.io/${{ github.actor }}/matrix-turnify:${{ github.ref_name }}
+          ghcr.io/${{ github.repository_owner }}/matrix-turnify:edge
