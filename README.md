@@ -57,7 +57,7 @@ services:
       - CF_TURN_TOKEN_ID=${CF_TURN_TOKEN_ID}
       - CF_TURN_API_TOKEN=${CF_TURN_API_TOKEN}
       - TURN_CREDENTIAL_TTL_SECONDS=${TURN_CREDENTIAL_TTL_SECONDS:-86400}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
     # Extra security options since this container needs very little permissions
     user: 1000:1000
     security_opt:
