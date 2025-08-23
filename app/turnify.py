@@ -132,4 +132,4 @@ def catch_all(path):
         return jsonify({"error": "Failed to connect to Synapse"}), 502
 
 if __name__ == "__main__":
-    app.run(host="::", port=4499)
+    app.run(host="0.0.0.0", port=4499)
