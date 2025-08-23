@@ -23,7 +23,7 @@ if __name__ != "__main__":  # Gunicorn environment
 @app.before_request
 def log_request():
     app.logger.debug(f"Received {request.method} request to {request.path} from {request.remote_addr}")
-    
+
 @app.route('/<path:subpath>/voip/turnServer', methods=['GET'])
 def proxy_request(subpath):
     app.logger.debug(f"Handling {request.method} request for {request.path}")
@@ -126,10 +126,10 @@ def catch_all(path):
             status=response.status_code,
             headers={key: value for key, value in response.headers.items() if key.lower() != 'transfer-encoding'}
         )
-    
+
     except requests.exceptions.RequestException as e:
         app.logger.error(f"{ip_addr} -- Error forwarding request to Synapse: {e}")
         return jsonify({"error": "Failed to connect to Synapse"}), 502
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4499)
+    app.run(host="::", port=4499)
